@@ -1,7 +1,9 @@
 from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.graphics import Color, Ellipse, Line, Mesh
 from kivy.clock import Clock
+from kivy.uix.label import Label
+from kivy.properties import ObjectProperty
 
 from math import pi, cos, sin
 
@@ -85,7 +87,11 @@ class KivyHexagon(Hexagon):
         return [e for e in cls.gen_vertex_sequences(vertices)]
 
 
-class HexagonRoot(BoxLayout):
+class HexagonRoot(FloatLayout):
+    center_label = ObjectProperty()
+    corner_label = ObjectProperty()
+    edge_label = ObjectProperty()
+
     EDGE_LEN = 100
     EDGE_WIDTH = 2
     CENTER_RADIUS = 4
@@ -105,9 +111,9 @@ class HexagonRoot(BoxLayout):
         corner_positions = Hexagon.create_corner_positions(center_position, self.EDGE_LEN)        
         corner_vertices = Hexagon.create_corner_vertices(center_position, self.EDGE_LEN) 
 
-        self.canvas.clear()
+        self.canvas.before.clear()
 
-        with self.canvas:
+        with self.canvas.before:
             Color(*self.MESH_COLOR)
             Mesh(vertices=KivyHexagon.convert_mesh_vertices(corner_vertices), indices=xrange(len(corner_vertices)), mode='triangle_fan')
 
@@ -120,6 +126,15 @@ class HexagonRoot(BoxLayout):
             Color(*self.CORNER_COLOR)
             for corner_position in corner_positions:
                 self.render_circle(corner_position, self.CORNER_RADIUS)
+
+            Line(points=KivyHexagon.convert_line_points(corner_positions)[2*3:2*3+4], width=self.EDGE_WIDTH)
+
+        self.center_label.center = (center_position.x, center_position.y - 20)
+        self.corner_label.center = (corner_positions[2].x, corner_positions[2].y - 20)
+        self.edge_label.center = (
+                (corner_positions[3].x + corner_positions[4].x) / 2 + 20, 
+                (corner_positions[3].y + corner_positions[4].y) / 2 - 10)
+
 
     def render_circle(self, center, radius):
         return Ellipse(pos=(center.x - radius, center.y - radius), size=(radius * 2, radius * 2))
