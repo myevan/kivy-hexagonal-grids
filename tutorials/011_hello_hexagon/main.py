@@ -53,11 +53,11 @@ class Hexagon(object):
 
     @classmethod
     def create_corner_positions(cls, center, edge_len):
-        return [cls.create_corner_position(center, edge_len, corner_index) for corner_index in range(6)]
+        return [cls.create_corner_position(center, edge_len, i) for i in range(6)]
 
     @classmethod
     def create_corner_vertices(cls, center, edge_len):
-        return [cls.create_corner_vertex(center, edge_len, corner_index) for corner_index in range(6)]
+        return [cls.create_corner_vertex(center, edge_len, i) for i in range(6)]
 
 
 class KivyHexagon(Hexagon):
