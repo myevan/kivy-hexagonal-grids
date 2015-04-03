@@ -3,8 +3,7 @@ Hello Hexagon
 
 <http://www.redblobgames.com/grids/hexagons/#basics>
 
-![Hello Hexagon Screenshot](./screenshots/hello_hexagon.png?raw=true)
-
+<img src="./screenshots/hello_hexagon.png?raw=true" width=300"/>
 
 #### 개념
 
