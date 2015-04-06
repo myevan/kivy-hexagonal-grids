@@ -39,11 +39,11 @@ class Vertex(object):
 class Hexagon(object):
     WEDGE_ANGLE_DEG = 60
 
-    _base_orientation_angle_deg = 30
+    _base_angle_deg = 30
 
     @classmethod
     def get_corner_angle_deg(cls, i):
-        return cls._base_orientation_angle_deg + cls.WEDGE_ANGLE_DEG * i
+        return cls._base_angle_deg + cls.WEDGE_ANGLE_DEG * i
 
     @classmethod
     def get_corner_angle_rad(cls, i):
