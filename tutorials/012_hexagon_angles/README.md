@@ -11,10 +11,10 @@ Hexagon Angles
 * 조각(wedge) 모양: 정삼각형(equilateral triangle)
 * 조각 내각: 정삼각형 내각(60도)
 * 조각 개수: 6 조각
-* 기본 모양(typical orientation) 각도
+* 대표 방향(typical orientation) 각도
     * 뾰족한 위(pointy topped): 30 도
     * 평평한 위(flat topped): 0 도
-* i 번째 꼭지점 각도 위치: 기본 모양 각도 + (60 * i) 도
+* i 번째 꼭지점 각도 위치: 대표 방향 각도 + (60 * i) 도
 
 
    ```python
