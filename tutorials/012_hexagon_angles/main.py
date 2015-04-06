@@ -37,17 +37,13 @@ class Vertex(object):
 
 
 class Hexagon(object):
-    INSIDE_ANGLE_DEG = 60
+    WEDGE_ANGLE_DEG = 60
 
-    _base_angle_deg = 30
-
-    @classmethod
-    def set_base_angle_deg(cls, deg):
-        cls._base_angle_deg = deg
+    _base_orientation_angle_deg = 30
 
     @classmethod
     def get_corner_angle_deg(cls, i):
-        return cls._base_angle_deg + cls.INSIDE_ANGLE_DEG * i
+        return cls._base_orientation_angle_deg + cls.WEDGE_ANGLE_DEG * i
 
     @classmethod
     def get_corner_angle_rad(cls, i):
@@ -127,8 +123,8 @@ class HexagonRoot(FloatLayout):
         self.bind(pos=self.render_canvas, size=self.render_canvas)
         self.make_corner_labels()
 
-        self.inner_angle_label = Label(text=u"{0}°".format(Hexagon.INSIDE_ANGLE_DEG), pos_hint={}, size_hint=(None, None))
-        self.add_widget(self.inner_angle_label)
+        self.wedge_angle_label = Label(text=u"{0}°".format(Hexagon.WEDGE_ANGLE_DEG), pos_hint={}, size_hint=(None, None))
+        self.add_widget(self.wedge_angle_label)
 
     def make_corner_labels(self):
         corner_angle_degs = Hexagon.create_corner_angles()
@@ -165,7 +161,7 @@ class HexagonRoot(FloatLayout):
                 elif corner_position.y > center_position.y:
                     corner_label.center = (corner_position.x, corner_position.y + 15)
 
-        self.inner_angle_label.center = (center_position.x + 30, center_position.y)
+        self.wedge_angle_label.center = (center_position.x + 30, center_position.y)
 
 class HexagonApp(App):
     pass
