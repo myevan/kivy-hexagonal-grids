@@ -1,9 +1,11 @@
-Hello Hexagon
-=============
+Hexagon Geometry
+================
+
+헥사곤 지오메트리
 
 <http://www.redblobgames.com/grids/hexagons/#basics>
 
-<img src="./screenshots/hello_hexagon.png?raw=true" width=50%"/>
+<p><img src="./screenshots/result.png" width=50%"/></p>
 
 #### 개념
 
