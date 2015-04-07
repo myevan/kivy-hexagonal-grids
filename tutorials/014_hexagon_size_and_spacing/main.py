@@ -47,6 +47,22 @@ class Hexagon(object):
     _base_angle_deg = 30
 
     @classmethod
+    def set_hexagon_pointy_topped(cls):
+        cls._base_angle_deg = 30
+
+    @classmethod
+    def set_hexagon_flat_topped(cls):
+        cls._base_angle_deg = 0
+
+    @classmethod
+    def is_hexagon_pointy_topped(cls):
+        return cls._base_angle_deg % 60 == 30
+
+    @classmethod
+    def is_hexagon_flat_topped(cls):
+        return cls._base_angle_deg % 60 == 0
+
+    @classmethod
     def get_hexagon_corner_angle_deg(cls, i):
         return cls._base_angle_deg + cls.WEDGE_ANGLE_DEG * i
 
@@ -85,21 +101,80 @@ class Hexagon(object):
         return [cls.create_hexagon_corner_vertex(center, edge_len, i) for i in xrange(6)]
 
     @classmethod
-    def get_hexagon_height(cls, edge_len):
+    def get_hexagon_long_len(cls, edge_len):
         return 2 * edge_len
 
     @classmethod
-    def get_hexagon_vert(cls, edge_len):
-        return cls.get_hexagon_height(edge_len) / 4.0 * 3.0
+    def get_hexagon_short_len(cls, edge_len):
+        return sqrt(3.0) / 2.0 * cls.get_hexagon_long_len(edge_len)
 
     @classmethod
-    def get_hexagon_width(cls, edge_len):
-        return sqrt(3.0) / 2.0 * cls.get_hexagon_height(edge_len) 
+    def get_hexagon_long_step(cls, edge_len):
+        return cls.get_hexagon_long_len(edge_len) / 4.0 * 3.0 
 
     @classmethod
-    def get_hexagon_horiz(cls, edge_len):
-        return cls.get_hexagon_width(edge_len)
+    def get_hexagon_short_len(cls, edge_len):
+        return sqrt(3.0) / 2.0 * cls.get_hexagon_long_len(edge_len)
 
+    @classmethod
+    def get_hexagon_short_step(cls, edge_len):
+        return cls.get_hexagon_short_len(edge_len) 
+
+    @classmethod
+    def get_hexagon_size(cls, edge_len):
+        if cls.is_hexagon_pointy_topped():
+            return (cls.get_hexagon_short_len(edge_len), cls.get_hexagon_long_len(edge_len))
+        else:
+            return (cls.get_hexagon_long_len(edge_len), cls.get_hexagon_short_len(edge_len))
+
+    @classmethod
+    def get_hexagon_step(cls, edge_len):
+        if cls.is_hexagon_pointy_topped():
+            return (cls.get_hexagon_short_step(edge_len), cls.get_hexagon_long_step(edge_len))
+        else:
+            return (cls.get_hexagon_long_step(edge_len), cls.get_hexagon_short_step(edge_len))
+
+    @classmethod
+    def get_hexagon_div(cls):
+        if cls.is_hexagon_pointy_topped():
+            return (2, 4)
+        else:
+            return (4, 2)
+
+    @classmethod
+    def gen_hexagon_grid_positions(cls, origin_position, edge_len, row_count, col_count):
+        size_x, size_y = cls.get_hexagon_size(edge_len)
+        step_x, step_y = cls.get_hexagon_step(edge_len)
+
+        base_position = Position(origin_position)
+        base_position.x += size_x * 0.5
+        base_position.y += size_y * 0.5
+
+        line_position = Position(base_position)
+
+        if cls._base_angle_deg == 30:
+            for row in xrange(0, row_count):
+                each_position = Position(line_position)
+                if row % 2 == 1:
+                    each_position.x += step_x * 0.5
+
+                for col in xrange(0, col_count):
+                    yield each_position
+                    each_position.x += step_x 
+
+                line_position.y += step_y 
+        else:
+            for col in xrange(0, col_count):
+                each_position = Position(line_position)
+                if col % 2 == 1:
+                    each_position.y += step_y * 0.5
+
+                for row in xrange(0, row_count):
+                    yield each_position
+                    each_position.y += step_y 
+
+                line_position.x += step_x
+           
 
 
 class KivyHexagon(Hexagon):
@@ -155,7 +230,7 @@ class KivyHexagon(Hexagon):
 
 class HexagonRoot(FloatLayout):
     X_AXIS_LEN = 700
-    Y_AXIS_LEN = 400
+    Y_AXIS_LEN = 450
 
     EDGE_LEN = 100
     EDGE_WIDTH = 2
@@ -172,6 +247,13 @@ class HexagonRoot(FloatLayout):
 
         self.bind(pos=self.render_canvas, size=self.render_canvas)
 
+    def make_pointy_topped(self):
+        KivyHexagon.set_hexagon_pointy_topped()
+        self.render_canvas()
+
+    def make_flat_topped(self):
+        KivyHexagon.set_hexagon_flat_topped()
+        self.render_canvas()
 
     def render_canvas(self, *args):
         origin_position = Position(*self.center)
@@ -181,64 +263,42 @@ class HexagonRoot(FloatLayout):
         x_axis_position = Position(origin_position.x + self.X_AXIS_LEN, origin_position.y)
         y_axis_position = Position(origin_position.x, origin_position.y + self.Y_AXIS_LEN)
 
-        hexagon_vert = KivyHexagon.get_hexagon_vert(self.EDGE_LEN)
-        hexagon_horiz = KivyHexagon.get_hexagon_horiz(self.EDGE_LEN)
-        hexagon_width = KivyHexagon.get_hexagon_width(self.EDGE_LEN)
-        hexagon_height = KivyHexagon.get_hexagon_height(self.EDGE_LEN)
-
         self.canvas.before.clear()
 
         with self.canvas.before:
             Color(*self.AXIS_COLOR)
             Line(points=KivyHexagon.convert_line_points([x_axis_position, origin_position, y_axis_position]), width=self.EDGE_WIDTH)
 
-            base_position = Position(origin_position)
-            base_position.x += hexagon_horiz * 0.5
-            base_position.y += hexagon_height * 0.5
+            for each_position in KivyHexagon.gen_hexagon_grid_positions(origin_position, self.EDGE_LEN, row_count=2, col_count=3):
+                Color(*self.MESH_COLOR)
+                KivyHexagon.make_hexagon_mesh(each_position, self.EDGE_LEN)
 
-            line_position = Position(base_position)
-            for row in xrange(0, 2):
-                each_position = Position(line_position)
-                if row % 2 == 1:
-                    each_position.x += hexagon_horiz * 0.5
+                Color(*self.EDGE_COLOR)
+                KivyHexagon.make_hexagon_outline(each_position, self.EDGE_LEN)
 
-                for col in xrange(0, 3):
-                    Color(*self.MESH_COLOR)
-                    KivyHexagon.make_hexagon_mesh(each_position, self.EDGE_LEN)
+                Color(*self.CENTER_COLOR)
+                KivyHexagon.make_circle(each_position, self.CENTER_RADIUS)
 
-                    Color(*self.EDGE_COLOR)
-                    KivyHexagon.make_hexagon_outline(each_position, self.EDGE_LEN)
-
-                    Color(*self.CENTER_COLOR)
-                    KivyHexagon.make_circle(each_position, self.CENTER_RADIUS)
-
-                    each_position.x += hexagon_horiz
-                line_position.y += hexagon_vert
-            
+            hexagon_width, hexagon_height = KivyHexagon.get_hexagon_size(self.EDGE_LEN)
+            hexagon_div_h, hexagon_div_v = KivyHexagon.get_hexagon_div()
 
             Color(*self.AXIS_COLOR)
             h_line_s_position = Position(origin_position)
             h_line_e_position = Position(h_line_s_position)
             h_line_e_position.x += self.X_AXIS_LEN
-
-            for row in xrange(0, int(self.Y_AXIS_LEN / hexagon_height * 4)):
+            for row in xrange(0, int(self.Y_AXIS_LEN / hexagon_height * hexagon_div_v)):
                 Line(points=KivyHexagon.convert_line_points([h_line_s_position, h_line_e_position]))
-                h_line_s_position.y += hexagon_height / 4
-                h_line_e_position.y += hexagon_height / 4
+                h_line_s_position.y += hexagon_height / hexagon_div_v
+                h_line_e_position.y += hexagon_height / hexagon_div_v
 
             v_line_s_position = Position(origin_position)
             v_line_e_position = Position(v_line_s_position)
             v_line_e_position.y += self.Y_AXIS_LEN
-
-            for row in xrange(0, int(self.X_AXIS_LEN / hexagon_width * 2))
-
+            for row in xrange(0, int(self.X_AXIS_LEN / hexagon_width * hexagon_div_h)):
                 Line(points=KivyHexagon.convert_line_points([v_line_s_position, v_line_e_position]))
-                v_line_s_position.x += hexagon_width / 2
-                v_line_e_position.x += hexagon_width / 2
+                v_line_s_position.x += hexagon_width / hexagon_div_h
+                v_line_e_position.x += hexagon_width / hexagon_div_h
 
-
-    def render_circle(self, center, radius):
-        return Ellipse(pos=(center.x - radius, center.y - radius), size=(radius * 2, radius * 2))
 
 class HexagonApp(App):
     pass
