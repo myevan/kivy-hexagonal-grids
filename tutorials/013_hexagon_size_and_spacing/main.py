@@ -247,6 +247,11 @@ class HexagonRoot(FloatLayout):
 
         self.bind(pos=self.render_canvas, size=self.render_canvas)
 
+        self.pool_v_line_labels = [Label(text="", pos_hint={}, size_hint=(None, None)) for i in xrange(20)]
+        self.pool_h_line_labels = [Label(text="", pos_hint={}, size_hint=(None, None)) for i in xrange(20)]
+        self.live_v_line_labels = []
+        self.live_h_line_labels = []
+
     def make_pointy_topped(self):
         KivyHexagon.set_hexagon_pointy_topped()
         self.render_canvas()
@@ -283,21 +288,49 @@ class HexagonRoot(FloatLayout):
             hexagon_div_h, hexagon_div_v = KivyHexagon.get_hexagon_div()
 
             Color(*self.AXIS_COLOR)
+            h_line_count = int(self.Y_AXIS_LEN / hexagon_height * hexagon_div_v)
+            h_line_step = hexagon_height / hexagon_div_v
             h_line_s_position = Position(origin_position)
             h_line_e_position = Position(h_line_s_position)
             h_line_e_position.x += self.X_AXIS_LEN
-            for row in xrange(0, int(self.Y_AXIS_LEN / hexagon_height * hexagon_div_v)):
-                Line(points=KivyHexagon.convert_line_points([h_line_s_position, h_line_e_position]))
-                h_line_s_position.y += hexagon_height / hexagon_div_v
-                h_line_e_position.y += hexagon_height / hexagon_div_v
 
+            for each_label in self.live_h_line_labels:
+                self.remove_widget(each_label)
+
+            self.live_h_line_labels = []
+            for i in xrange(0, int(self.Y_AXIS_LEN / hexagon_height * hexagon_div_v)):
+                Line(points=KivyHexagon.convert_line_points([h_line_s_position, h_line_e_position]))
+
+                h_line_label = self.pool_h_line_labels[i]
+                h_line_label.text = "{0:.1f}".format(i * h_line_step)
+                h_line_label.center = (origin_position.x - 25, h_line_s_position.y)
+                self.live_h_line_labels.append(h_line_label)
+                self.add_widget(h_line_label)
+
+                h_line_s_position.y += hexagon_height / hexagon_div_v
+                h_line_e_position.y = h_line_s_position.y
+
+            v_line_count = int(self.X_AXIS_LEN / hexagon_width * hexagon_div_h)
+            v_line_step = hexagon_width / hexagon_div_h
             v_line_s_position = Position(origin_position)
             v_line_e_position = Position(v_line_s_position)
             v_line_e_position.y += self.Y_AXIS_LEN
-            for row in xrange(0, int(self.X_AXIS_LEN / hexagon_width * hexagon_div_h)):
+
+            for each_label in self.live_v_line_labels:
+                self.remove_widget(each_label)
+
+            self.live_v_line_labels = []
+            for i in xrange(0, v_line_count):
                 Line(points=KivyHexagon.convert_line_points([v_line_s_position, v_line_e_position]))
-                v_line_s_position.x += hexagon_width / hexagon_div_h
-                v_line_e_position.x += hexagon_width / hexagon_div_h
+
+                v_line_label = self.pool_v_line_labels[i]
+                v_line_label.text = "{0:.1f}".format(i * v_line_step)
+                v_line_label.center = (v_line_s_position.x + 10, origin_position.y - 20)
+                self.live_v_line_labels.append(v_line_label)
+                self.add_widget(v_line_label)
+
+                v_line_s_position.x += v_line_step
+                v_line_e_position.x = v_line_s_position.x
 
 
 class HexagonApp(App):
