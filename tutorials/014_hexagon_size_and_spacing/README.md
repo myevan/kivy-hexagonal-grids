@@ -5,5 +5,6 @@ Hexagon Size and Spacing
 
 <http://www.redblobgames.com/grids/hexagons/#basics>
 
-<p><img src="./screenshots/result.png" width=50%"/></p>
+<p><img src="./screenshots/result_pointy_topped.png" width=50%"/></p>
+<p><img src="./screenshots/result_flat_topped.png" width=50%"/></p>
 
