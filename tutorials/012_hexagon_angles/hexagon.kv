@@ -1,1 +1,13 @@
 HexagonRoot:
+    BoxLayout:
+        size_hint: (0.5, 0.1)
+        pos_hint: {'x':0.25, 'y':0.90}
+        ToggleButton:
+            state: "down"
+            group: "orientation"
+            text: "Pointy Topped"
+            on_press: root.make_pointy_topped()
+        ToggleButton:
+            group: "orientation"
+            text: "Flat Topped"
+            on_press: root.make_flat_topped()

@@ -5,7 +5,8 @@ Hexagon Angles
 
 <http://www.redblobgames.com/grids/hexagons/#basics>
 
-<p><img src="./screenshots/result.png" width=50%"/></p>
+<p><img src="./screenshots/result_pointy_topped.png" width=50%"/></p>
+<p><img src="./screenshots/result_flat_topped.png" width=50%"/></p>
 
 * 표준 육각형 내각(interior angle): 120 도
 * 조각 모양: 정삼각형(equilateral triangle)
