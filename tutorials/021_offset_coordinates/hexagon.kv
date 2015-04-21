@@ -1,0 +1,21 @@
+HexagonRoot:
+    BoxLayout:
+        size_hint: (0.5, 0.1)
+        pos_hint: {'x':0.25, 'y':0.90}
+        ToggleButton:
+            state: "down"
+            group: "orientation"
+            text: "odd-r"
+            on_press: root.make_odd_r()
+        ToggleButton:
+            group: "orientation"
+            text: "even-r"
+            on_press: root.make_even_r()
+        ToggleButton:
+            group: "orientation"
+            text: "odd-q"
+            on_press: root.make_odd_q()
+        ToggleButton:
+            group: "orientation"
+            text: "even-q"
+            on_press: root.make_even_q()
